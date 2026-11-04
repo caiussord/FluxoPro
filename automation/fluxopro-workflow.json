@@ -75,7 +75,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        900,
+        1000,
         300
       ],
       "parameters": {
@@ -110,20 +110,20 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1120,
+        1220,
         300
       ],
       "parameters": {
         "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
         "toEmail": "={{$('Consultar solicitação').first().json.email}}",
-        "subject": "={{'Orçamento demonstrativo FluxoPro - ' + $('Receber solicitação').first().json.body.id}}",
+        "subject": "={{$('Consultar mensagens').first().json.cliente.assunto}}",
         "emailFormat": "text",
-        "text": "={{'Olá, ' + $('Consultar solicitação').first().json.nome + '. Recebemos sua solicitação demonstrativa. O PDF está em anexo. Este documento não tem validade comercial.'}}",
+        "text": "={{$('Consultar mensagens').first().json.cliente.corpo}}",
         "options": {
           "attachments": "data"
         }
       },
-      "retryOnFail": true,
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
@@ -134,18 +134,18 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        1340,
+        1440,
         300
       ],
       "parameters": {
         "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
         "toEmail": "={{$env.FLUXOPRO_TEAM_EMAIL}}",
-        "subject": "={{'Nova solicitação FluxoPro - ' + $('Receber solicitação').first().json.body.id}}",
+        "subject": "={{$('Consultar mensagens').first().json.equipe.assunto}}",
         "emailFormat": "text",
-        "text": "={{'Nova solicitação demonstrativa de ' + $('Consultar solicitação').first().json.nome + '. Consulte a API para detalhes.'}}",
+        "text": "={{$('Consultar mensagens').first().json.equipe.corpo}}",
         "options": {}
       },
-      "retryOnFail": true,
+      "retryOnFail": false,
       "maxTries": 3,
       "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
@@ -156,7 +156,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1560,
+        1660,
         300
       ],
       "parameters": {
@@ -187,7 +187,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1560,
+        1660,
         520
       ],
       "parameters": {
@@ -207,6 +207,33 @@
         "jsonBody": "={\"status\":\"Falha\",\"erro\":\"Falha no workflow n8n; consultar execução.\"}",
         "options": {}
       }
+    },
+    {
+      "id": "messages",
+      "name": "Consultar mensagens",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        300
+      ],
+      "parameters": {
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id + '/mensagens'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
     }
   ],
   "connections": {
@@ -236,7 +263,7 @@
       "main": [
         [
           {
-            "node": "Gerar PDF",
+            "node": "Consultar mensagens",
             "type": "main",
             "index": 0
           }
@@ -307,6 +334,24 @@
     "Concluir": {
       "main": [
         [],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar mensagens": {
+      "main": [
+        [
+          {
+            "node": "Gerar PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Registrar falha",

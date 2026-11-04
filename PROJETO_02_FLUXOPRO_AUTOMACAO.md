@@ -1,6 +1,6 @@
 # Projeto 02 — FluxoPro | Automação de Orçamentos
 
-> **Status:** MVP local implementado e fluxo n8n/SMTP testado com dados fictícios em 04/11/2026 · **Tipo:** projeto autoral demonstrativo para portfólio.
+> **Status:** MVP local e fluxo n8n/SMTP testados com dados fictícios em 04/11/2026. Evolução 2.0 implementada localmente e aguardando revisão do novo workflow · **Tipo:** projeto autoral demonstrativo para portfólio.
 
 ## 1. Visão geral
 
@@ -27,7 +27,7 @@ flowchart TD
     I --> J[Registra resultado do processamento]
 ```
 
-> A sequência acima é a arquitetura **planejada**. A implementação deverá tratar falhas de rede, reenvios e indisponibilidade do serviço de e-mail.
+> A implementação atual trata falhas de rede, reenvios controlados e indisponibilidade do serviço de e-mail. Consulte o [README](README.md) para o estado verificado.
 
 ## 3. Público-alvo
 
@@ -85,7 +85,7 @@ flowchart TD
 | **SMTP / serviço de e-mail** | Notificações transacionais |
 | **Git e GitHub** | Versionamento, documentação e apresentação |
 
-**Observação:** as tecnologias são uma **proposta de implementação**, não uma lista de ferramentas já utilizadas neste projeto. A biblioteca de geração de PDF será escolhida durante o desenvolvimento, verificando licença e compatibilidade.
+**Observação:** essas tecnologias já estão em uso no projeto. O PDF é gerado com QuestPDF.
 
 ## 6. Arquitetura proposta
 
@@ -218,14 +218,15 @@ A definição definitiva dos endpoints e da autenticação será fechada na impl
 - Cálculo avançado de preços e regras tributárias.
 - Operação comercial real com dados de clientes.
 
-## 14. Próximos passos
+## 14. Evolução 2.0 e próximos passos
 
-1. Criar o repositório `fluxopro-automacao`.
-2. Escolher o tipo de serviço e a regra simples de cálculo do orçamento demonstrativo.
-3. Implementar primeiro a API e o formulário, antes da automação.
-4. Integrar n8n, PDF e notificações.
-5. Testar, documentar e preparar o material visual para GitHub, 99Freelas e Workana.
+A versão local acrescenta painel administrativo com indicadores, busca e filtros, histórico de status, serviços e preços configuráveis, templates de e-mail, exportação CSV, autenticação, testes e CI. A API foi separada em `Endpoints`, `Services`, `Models` e `Infrastructure`. A reserva atômica dos pedidos e as transições de estado são verificadas no SQLite.
+
+1. Revisar o painel e as alterações locais antes de publicar no repositório.
+2. Importar o workflow atualizado no n8n e configurar as credenciais do novo nó `Consultar mensagens`.
+3. Testar novamente o formulário e os dois e-mails com o novo workflow.
+4. Preparar capturas de tela com dados fictícios e publicar o material do portfólio.
 
 ---
 
-**Nota de implementação:** consulte o README para executar o MVP. O teste local completou o workflow, mas a apresentação no portfólio ainda exige capturas de tela e revisão do material público.
+**Nota de implementação:** consulte o README para executar a aplicação. O fluxo anterior completou o teste local; o novo export do n8n ainda precisa de teste ponta a ponta após a importação.

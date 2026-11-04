@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FluxoPro | Administração</title><link rel="stylesheet" href="/style.css"></head>
+<body class="admin-page">
+  <main id="login-screen" class="login-screen">
+    <form id="login-form" class="card login-card">
+      <span class="brand">Fluxo<span>Pro</span></span>
+      <h1>Área administrativa</h1>
+      <p>Acesse para acompanhar solicitações, ajustar preços e consultar o histórico.</p>
+      <label>Senha administrativa<input id="password" type="password" autocomplete="current-password" required minlength="16"></label>
+      <button type="submit">Entrar <span aria-hidden="true">→</span></button>
+      <div id="login-message" class="inline-message" role="status" aria-live="polite"></div>
+      <a href="/" class="text-button">← Voltar ao formulário</a>
+    </form>
+  </main>
+  <div id="admin-layout" class="admin-layout" hidden>
+    <aside class="sidebar">
+      <span class="brand">Fluxo<span>Pro</span></span>
+      <nav aria-label="Administração">
+        <button type="button" class="active" data-section="overview">Visão geral</button>
+        <button type="button" data-section="quotes">Solicitações</button>
+        <button type="button" data-section="services">Serviços e preços</button>
+        <button type="button" data-section="templates">E-mails</button>
+      </nav>
+      <div class="sidebar-bottom"><a href="/">Ver formulário ↗</a><button id="logout" type="button">Sair</button></div>
+    </aside>
+    <main class="admin-main">
+      <header class="admin-header"><div><p class="eyebrow">PAINEL ADMINISTRATIVO</p><h1 id="page-title">Visão geral</h1><p id="page-subtitle">Acompanhe os pedidos e o andamento da automação.</p></div><span class="badge">Ambiente demonstrativo</span></header>
+      <section id="section-overview" class="section">
+        <div class="stats">
+          <div class="stat accent"><span class="label">Solicitações</span><strong id="stat-total">0</strong></div>
+          <div class="stat"><span class="label">Concluídas</span><strong id="stat-done">0</strong></div>
+          <div class="stat"><span class="label">Em andamento</span><strong id="stat-pending">0</strong></div>
+          <div class="stat"><span class="label">Falhas</span><strong id="stat-failed">0</strong></div>
+        </div>
+        <div class="panel"><div class="panel-head"><h2>Solicitações recentes</h2><button class="text-button" data-section="quotes">Ver todas →</button></div><div class="table-wrap"><table><thead><tr><th>Solicitante</th><th>Serviço</th><th>Data</th><th>Status</th><th></th></tr></thead><tbody id="recent-rows"></tbody></table></div></div>
+      </section>
+      <section id="section-quotes" class="section" hidden>
+        <div class="panel"><div class="panel-head"><h2>Solicitações</h2><button id="export-csv" class="secondary-button" type="button">Exportar CSV ↓</button></div>
+          <div class="filters"><label>Buscar<input id="search" type="search" maxlength="100" placeholder="Nome, e-mail, serviço ou protocolo"></label><label>Status<select id="status-filter"><option value="">Todos</option><option>Recebida</option><option>Em processamento</option><option>Concluída</option><option>Falha</option></select></label><button id="filter-button" class="secondary-button" type="button">Filtrar</button></div>
+          <div class="table-wrap"><table><thead><tr><th>Solicitante</th><th>Serviço</th><th>Valor</th><th>Data</th><th>Status</th><th></th></tr></thead><tbody id="quote-rows"></tbody></table></div>
+          <div class="pager"><button id="prev-page" type="button">← Anterior</button><span id="page-info">Página 1</span><button id="next-page" type="button">Próxima →</button></div>
+        </div>
+        <div id="quote-detail" class="panel" hidden><div class="panel-head"><h2>Detalhes do pedido</h2><button id="close-detail" class="text-button" type="button">Fechar ×</button></div><div id="detail-content"></div><h2 style="margin-top:26px">Histórico</h2><ol id="history-list" class="history"></ol><div id="detail-actions" style="margin-top:16px"></div></div>
+      </section>
+      <section id="section-services" class="section" hidden><div class="panel"><h2>Serviços e preços</h2><p class="notice">As mudanças valem para novos pedidos. Pedidos anteriores mantêm o valor registrado.</p><div id="service-list"></div><div id="service-message" class="inline-message" role="status"></div></div></section>
+      <section id="section-templates" class="section" hidden><div class="panel"><h2>Modelos de e-mail</h2><p class="notice">Use <code>{{nome}}</code>, <code>{{id}}</code> e <code>{{servico}}</code> como campos variáveis. O n8n usa os modelos ao processar novos pedidos.</p><div id="template-list"></div><div id="template-message" class="inline-message" role="status"></div></div></section>
+    </main>
+  </div>
+  <script src="/admin.js"></script>
+</body>
+</html>
