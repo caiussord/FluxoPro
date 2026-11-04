@@ -2,7 +2,8 @@
   "name": "FluxoPro - orçamento demonstrativo",
   "nodes": [
     {
-      "id": "webhook",
+      "id": "e27e1bcb-bf9f-4b50-b07d-3fd62e543b75",
+      "webhookId": "daa8694b-5ad4-4cc5-b056-339722680fae",
       "name": "Receber solicitação",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,

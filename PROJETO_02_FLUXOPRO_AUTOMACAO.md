@@ -1,6 +1,6 @@
 # Projeto 02 — FluxoPro | Automação de Orçamentos
 
-> **Status:** MVP local e fluxo n8n/SMTP testados com dados fictícios em 04/11/2026. Evolução 2.0 implementada localmente e aguardando revisão do novo workflow · **Tipo:** projeto autoral demonstrativo para portfólio.
+> **Status:** MVP e evolução 2.0 testados localmente com dados fictícios em 04/11/2026; confirmação visual dos novos e-mails pendente · **Tipo:** projeto autoral demonstrativo para portfólio.
 
 ## 1. Visão geral
 
@@ -223,10 +223,9 @@ A definição definitiva dos endpoints e da autenticação será fechada na impl
 A versão local acrescenta painel administrativo com indicadores, busca e filtros, histórico de status, serviços e preços configuráveis, templates de e-mail, exportação CSV, autenticação, testes e CI. A API foi separada em `Endpoints`, `Services`, `Models` e `Infrastructure`. A reserva atômica dos pedidos e as transições de estado são verificadas no SQLite.
 
 1. Revisar o painel e as alterações locais antes de publicar no repositório.
-2. Importar o workflow atualizado no n8n e configurar as credenciais do novo nó `Consultar mensagens`.
-3. Testar novamente o formulário e os dois e-mails com o novo workflow.
-4. Preparar capturas de tela com dados fictícios e publicar o material do portfólio.
+2. Conferir na caixa de entrada as duas mensagens da execução com o novo workflow e o PDF anexado.
+3. Preparar capturas de tela com dados fictícios e publicar o material do portfólio.
 
 ---
 
-**Nota de implementação:** consulte o README para executar a aplicação. O fluxo anterior completou o teste local; o novo export do n8n ainda precisa de teste ponta a ponta após a importação.
+**Nota de implementação:** consulte o README para executar a aplicação. O novo workflow completou um pedido local com os dois nós SMTP e o PDF; falta conferir visualmente as mensagens recebidas.
