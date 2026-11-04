@@ -36,7 +36,7 @@ function rowFor(quote, recent = false) {
   row.append(td(date(quote.criadoEm)));
   const status = document.createElement('td'); status.append(statusBadge(quote.status)); row.append(status);
   const action = document.createElement('td'); const button = document.createElement('button');
-  button.type = 'button'; button.textContent = 'Detalhes →';
+  button.type = 'button'; button.textContent = 'Detalhes';
   button.addEventListener('click', async () => { await showSection('quotes'); await openDetail(quote.id); });
   action.append(button); row.append(action); return row;
 }
@@ -71,7 +71,7 @@ async function openDetail(id) {
   grid.append(field('Protocolo', quote.id), field('Status', quote.status), field('Nome', quote.nome), field('E-mail', quote.email), field('Telefone', quote.telefone), field('Serviço', quote.servico), field('Quantidade', String(quote.quantidade)), field('Valor estimado', currency(quote.valorEstimado)), field('Descrição', quote.descricao), field('Último erro', quote.ultimoErro));
   $('#detail-content').replaceChildren(grid);
   const entries = history.map(entry => {
-    const li = document.createElement('li'); li.textContent = entry.origem === 'pdf' ? 'PDF gerado' : entry.de === entry.para ? `${entry.para} · ${entry.origem}` : `${entry.de ? entry.de + ' → ' : ''}${entry.para} · ${entry.origem}`;
+    const li = document.createElement('li'); li.textContent = entry.origem === 'pdf' ? 'PDF gerado' : entry.de === entry.para ? `${entry.para} · ${entry.origem}` : `${entry.de ? entry.de + ' para ' : ''}${entry.para} · ${entry.origem}`;
     const small = document.createElement('small'); small.textContent = `${date(entry.em)}${entry.detalhe ? ' · ' + entry.detalhe : ''}`; li.append(small); return li;
   }); $('#history-list').replaceChildren(...entries);
   $('#detail-actions').replaceChildren();
