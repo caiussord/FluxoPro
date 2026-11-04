@@ -1,0 +1,324 @@
+{
+  "name": "FluxoPro - orçamento demonstrativo",
+  "nodes": [
+    {
+      "id": "webhook",
+      "name": "Receber solicitação",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fluxopro-solicitacao",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "claim",
+      "name": "Iniciar uma vez",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id + '/iniciar'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "get",
+      "name": "Consultar solicitação",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        680,
+        300
+      ],
+      "parameters": {
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "pdf",
+      "name": "Gerar PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id + '/gerar-pdf'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "customer",
+      "name": "Enviar confirmação",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
+        "toEmail": "={{$('Consultar solicitação').first().json.email}}",
+        "subject": "={{'Orçamento demonstrativo FluxoPro - ' + $('Receber solicitação').first().json.body.id}}",
+        "emailFormat": "text",
+        "text": "={{'Olá, ' + $('Consultar solicitação').first().json.nome + '. Recebemos sua solicitação demonstrativa. O PDF está em anexo. Este documento não tem validade comercial.'}}",
+        "options": {
+          "attachments": "data"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "company",
+      "name": "Avisar equipe",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        300
+      ],
+      "parameters": {
+        "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
+        "toEmail": "={{$env.FLUXOPRO_TEAM_EMAIL}}",
+        "subject": "={{'Nova solicitação FluxoPro - ' + $('Receber solicitação').first().json.body.id}}",
+        "emailFormat": "text",
+        "text": "={{'Nova solicitação demonstrativa de ' + $('Consultar solicitação').first().json.nome + '. Consulte a API para detalhes.'}}",
+        "options": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "done",
+      "name": "Concluir",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        300
+      ],
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id + '/status'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"status\":\"Concluída\"}",
+        "options": {}
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "failed",
+      "name": "Registrar falha",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1560,
+        520
+      ],
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{$env.FLUXOPRO_API_URL + '/api/solicitacoes/' + $('Receber solicitação').first().json.body.id + '/status'}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Key",
+              "value": "={{$env.FLUXOPRO_INTERNAL_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"status\":\"Falha\",\"erro\":\"Falha no workflow n8n; consultar execução.\"}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Receber solicitação": {
+      "main": [
+        [
+          {
+            "node": "Iniciar uma vez",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iniciar uma vez": {
+      "main": [
+        [
+          {
+            "node": "Consultar solicitação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar solicitação": {
+      "main": [
+        [
+          {
+            "node": "Gerar PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gerar PDF": {
+      "main": [
+        [
+          {
+            "node": "Enviar confirmação",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar confirmação": {
+      "main": [
+        [
+          {
+            "node": "Avisar equipe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Avisar equipe": {
+      "main": [
+        [
+          {
+            "node": "Concluir",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Concluir": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Registrar falha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

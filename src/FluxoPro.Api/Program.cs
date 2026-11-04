@@ -1,0 +1,1 @@
+await FluxoPro.Start(args);

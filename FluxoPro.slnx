@@ -1,0 +1,5 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FluxoPro.Api/FluxoPro.Api.csproj" />
+  </Folder>
+</Solution>

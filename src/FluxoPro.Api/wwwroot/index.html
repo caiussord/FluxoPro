@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FluxoPro | Solicitar orçamento</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <div class="intro"><span class="brand">FluxoPro</span><span class="tag">DEMONSTRAÇÃO</span></div>
+    <section class="hero"><p class="eyebrow">SOLICITAÇÃO DE ORÇAMENTO</p><h1>Conte o que você precisa.</h1><p>Preencha os detalhes abaixo para receber uma estimativa demonstrativa. Os valores são fictícios e não representam proposta comercial.</p></section>
+    <form id="form" class="card">
+      <div class="grid"><label>Nome completo<input name="nome" required minlength="2" maxlength="100" autocomplete="name" placeholder="Seu nome"></label><label>E-mail<input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="voce@exemplo.com"></label></div>
+      <div class="grid"><label>Telefone <small>(opcional)</small><input name="telefone" type="tel" maxlength="30" autocomplete="tel" placeholder="(00) 00000-0000"></label><label>Serviço<select name="servico" required><option value="">Selecione uma opção</option></select></label></div>
+      <div class="grid"><label>Quantidade<input name="quantidade" type="number" min="1" max="20" value="1" required></label><div class="estimate"><span>Estimativa ilustrativa</span><strong id="estimate">Selecione um serviço</strong></div></div>
+      <label>Descrição do projeto<textarea name="descricao" required minlength="10" maxlength="2000" rows="5" placeholder="Descreva o que precisa, objetivos e detalhes relevantes"></textarea></label>
+      <label class="check"><input name="consentimento" type="checkbox" required><span>Concordo com o uso dos dados informados para esta demonstração. Os dados ficam no ambiente local e podem ser excluídos pelo operador. Não use informações reais ou sensíveis.</span></label>
+      <button type="submit">Enviar solicitação <span aria-hidden="true">↗</span></button>
+      <div id="message" role="status" aria-live="polite"></div>
+    </form>
+    <footer>FluxoPro · Projeto demonstrativo de portfólio</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

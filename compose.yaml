@@ -1,0 +1,31 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:stable
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      - TZ=America/Sao_Paulo
+      - GENERIC_TIMEZONE=America/Sao_Paulo
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - FLUXOPRO_API_URL=${FLUXOPRO_API_URL}
+      - FLUXOPRO_INTERNAL_KEY=${FLUXOPRO_INTERNAL_KEY}
+      - FLUXOPRO_FROM_EMAIL=${FLUXOPRO_FROM_EMAIL}
+      - FLUXOPRO_TEAM_EMAIL=${FLUXOPRO_TEAM_EMAIL}
+    volumes:
+      - n8n_data:/home/node/.n8n
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8026:8025"
+    environment:
+      - MP_DATABASE=/data/mailpit.db
+      - MP_SMTP_AUTH_ACCEPT_ANY=1
+      - MP_SMTP_AUTH_ALLOW_INSECURE=1
+    volumes:
+      - mailpit_data:/data
+volumes:
+  n8n_data:
+  mailpit_data:
