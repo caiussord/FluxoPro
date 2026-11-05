@@ -36,7 +36,12 @@
 .admin-page .workspace-nav button:nth-child(4)::before { content: '04'; }
 .admin-page .workspace-nav button.active { color: #f8f9ef; border-color: var(--acid); }
 .admin-page .workspace-nav button:hover { color: #fff; }
+.admin-page .nav-toggle { display: none; }
 .admin-page .admin-main { max-width: none; width: 100%; margin: 0; padding: 50px clamp(24px, 3.5vw, 72px) 90px; }
+.admin-page .admin-message { min-height: 0; font-size: 13px; }
+.admin-page .admin-message:not(:empty) { padding: 13px 16px; margin-bottom: 24px; border: 1px solid #aec4ae; background: #e4ebdc; }
+.admin-page .admin-message.error { color: #8a493d; border-color: #d5aaa1; background: #f4e4df; }
+.admin-page .admin-message.loading { color: #3d5b4b; }
 .admin-page .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0; margin-bottom: 56px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
 .admin-page .stat, .admin-page .stat.accent { position: relative; min-height: 195px; background: transparent; color: var(--deep); border: 0; border-right: 1px solid var(--rule); border-radius: 0; box-shadow: none; padding: 29px 32px; }
 .admin-page .stat:first-child { padding-left: 0; }
@@ -65,7 +70,7 @@
 .admin-page .status.done { background: #dcebd5; border-color: #b8d3b6; color: #255b37; }
 .admin-page .status.failed { background: #f2ded6; border-color: #ddbbb2; color: #8a493d; }
 .admin-page .status.processing { background: #dde8e8; border-color: #b9d0d0; color: #365e69; }
-.admin-page .filters { margin: 27px 0 25px; grid-template-columns: minmax(200px, 1fr) 210px auto; }
+.admin-page .filters { margin: 27px 0 25px; grid-template-columns: minmax(200px, 1fr) 180px 180px auto; }
 .admin-page .filters label, .admin-page .settings-row label { color: #3d5b4b; font-size: 11px; letter-spacing: .02em; }
 .admin-page input, .admin-page select, .admin-page textarea { background: #fbfcf7; border: 1px solid #b9c9b9; border-radius: 3px; box-shadow: none; padding: 12px 13px; }
 .admin-page input:focus, .admin-page select:focus, .admin-page textarea:focus { border-color: #417450; box-shadow: 0 0 0 2px #9cc48244; }
@@ -99,6 +104,7 @@
   .admin-page .workspace-heading { padding: 42px 0 33px; }
   .admin-page .workspace-heading .badge { display: none; }
   .admin-page .workspace-nav button { margin-right: 13px; padding-right: 10px; }
+  .admin-page .filters { grid-template-columns: minmax(200px, 1fr) minmax(140px, 180px); }
   .admin-page .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .admin-page .stat:nth-child(2) { border-right: 0; }
   .admin-page .stat:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
@@ -111,6 +117,10 @@
   .admin-page .workspace-actions a, .admin-page .workspace-actions button { font-size: 11px; }
   .admin-page .workspace-heading h1 { font-size: 46px; }
   .admin-page .workspace-nav button { font-size: 12px; }
+  .admin-page .nav-toggle { display: block; width: 100%; padding: 13px 0; color: #f8f9ef; text-align: left; background: transparent; border: 0; border-top: 1px solid #ffffff31; font-weight: 700; }
+  .admin-page .workspace-nav { display: none; border-top: 0; flex-direction: column; padding-bottom: 14px; }
+  .admin-page .workspace-nav.is-open { display: flex; }
+  .admin-page .workspace-nav button { width: 100%; text-align: left; margin: 0; padding: 11px 0; border-bottom-width: 1px; }
   .admin-page .admin-main { padding: 28px 16px 50px; }
   .admin-page .stat { min-height: 143px; padding: 18px 12px; }
   .admin-page .stat strong { font-size: 40px; }

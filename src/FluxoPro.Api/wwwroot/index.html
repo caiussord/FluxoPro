@@ -1,25 +1,79 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>FluxoPro | Solicitar orçamento</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Solicitar orçamento | FluxoPro</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/form.css">
 </head>
-<body>
+<body class="public-page">
   <main class="shell">
-    <div class="intro"><span class="brand">Fluxo<span>Pro</span></span><div class="nav-right"><span class="tag">DEMONSTRAÇÃO</span><a class="admin-link" href="/admin">Área administrativa</a></div></div>
-    <section class="hero"><p class="eyebrow">SOLICITAÇÃO DE ORÇAMENTO</p><h1>Conte o que você precisa.</h1><p>Preencha os detalhes abaixo para receber uma estimativa demonstrativa. Os valores são fictícios e não representam proposta comercial.</p></section>
-    <form id="form" class="card">
-      <div class="grid"><label>Nome completo<input name="nome" required minlength="2" maxlength="100" autocomplete="name" placeholder="Seu nome"></label><label>E-mail<input name="email" type="email" required maxlength="254" autocomplete="email" placeholder="voce@exemplo.com"></label></div>
-      <div class="grid"><label>Telefone <small>(opcional)</small><input name="telefone" type="tel" maxlength="30" autocomplete="tel" placeholder="(00) 00000-0000"></label><label>Serviço<select name="servico" required><option value="">Selecione uma opção</option></select></label></div>
-      <div class="grid"><label>Quantidade<input name="quantidade" type="number" min="1" max="20" value="1" required></label><div class="estimate"><span>Estimativa ilustrativa</span><strong id="estimate">Selecione um serviço</strong></div></div>
-      <label>Descrição do projeto<textarea name="descricao" required minlength="10" maxlength="2000" rows="5" placeholder="Descreva o que precisa, objetivos e detalhes relevantes"></textarea></label>
-      <label class="check"><input name="consentimento" type="checkbox" required><span>Concordo com o uso dos dados informados para esta demonstração. Os dados ficam no ambiente local e podem ser excluídos pelo operador. Não use informações reais ou sensíveis.</span></label>
-      <button type="submit">Enviar solicitação</button>
-      <div id="message" role="status" aria-live="polite"></div>
+    <header class="intro">
+      <span class="brand">Fluxo<span>Pro</span></span>
+      <div class="nav-right"><span class="tag">PROJETO DEMONSTRATIVO</span><a class="admin-link" href="/admin">Área administrativa</a></div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow">GESTÃO E AUTOMAÇÃO DE ORÇAMENTOS</p>
+      <h1 id="page-title">Seu projeto começa com um pedido claro.</h1>
+      <p>Informe o serviço e o que você precisa. O FluxoPro registra a solicitação, calcula uma estimativa ilustrativa e prepara o acompanhamento pela equipe.</p>
+      <div class="hero-note"><span>01</span> Envie seu pedido <span>02</span> Receba um protocolo <span>03</span> Acompanhe a confirmação</div>
+    </section>
+
+    <form id="form" class="card quote-form" novalidate>
+      <section class="form-section" aria-labelledby="contact-title">
+        <div class="form-section-head"><span>01 / CONTATO</span><div><h2 id="contact-title">Como podemos falar com você?</h2><p>Use dados fictícios para esta demonstração.</p></div></div>
+        <div class="form-section-body">
+        <div class="grid">
+          <div class="field"><label for="nome">Nome completo</label><input id="nome" name="nome" required minlength="2" maxlength="100" autocomplete="name" placeholder="Ex.: Marina Exemplo" aria-describedby="error-nome"><span id="error-nome" class="field-error" role="alert"></span></div>
+          <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="marina@example.com" aria-describedby="error-email"><span id="error-email" class="field-error" role="alert"></span></div>
+        </div>
+        <div class="field"><label for="telefone">Telefone <small>(opcional)</small></label><input id="telefone" name="telefone" type="tel" maxlength="30" autocomplete="tel" placeholder="(00) 00000-0000" aria-describedby="error-telefone"><span id="error-telefone" class="field-error" role="alert"></span></div>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="service-title">
+        <div class="form-section-head"><span>02 / SERVIÇO</span><div><h2 id="service-title">O que você precisa?</h2><p>Escolha um serviço e a quantidade desejada.</p></div></div>
+        <div class="form-section-body">
+        <div class="grid">
+          <div class="field"><label for="servico">Serviço</label><select id="servico" name="servico" required aria-describedby="error-servico"><option value="">Selecione uma opção</option></select><span id="error-servico" class="field-error" role="alert"></span></div>
+          <div class="field"><label for="quantidade">Quantidade</label><input id="quantidade" name="quantidade" type="number" min="1" max="20" value="1" required aria-describedby="error-quantidade"><span id="error-quantidade" class="field-error" role="alert"></span></div>
+        </div>
+        <div class="estimate" aria-live="polite"><div><span>Estimativa ilustrativa</span><small id="estimate-basis">Selecione um serviço para ver o cálculo</small></div><strong id="estimate">Selecione um serviço</strong></div>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="details-title">
+        <div class="form-section-head"><span>03 / DETALHES</span><div><h2 id="details-title">Conte um pouco mais.</h2><p>Objetivos e contexto ajudam a organizar o pedido.</p></div></div>
+        <div class="form-section-body">
+        <div class="field"><label for="descricao">Descrição do projeto</label><textarea id="descricao" name="descricao" required minlength="10" maxlength="2000" rows="5" placeholder="Ex.: Preciso de uma página para apresentar um serviço fictício..." aria-describedby="error-descricao"></textarea><span id="error-descricao" class="field-error" role="alert"></span></div>
+        </div>
+      </section>
+
+      <section class="form-section review-section" aria-labelledby="review-title">
+        <div class="form-section-head"><span>04 / REVISÃO</span><div><h2 id="review-title">Pronto para enviar?</h2><p>Confira os dados antes de registrar a solicitação.</p></div></div>
+        <div class="form-section-body">
+        <label class="check" for="consentimento"><input id="consentimento" name="consentimento" type="checkbox" required aria-describedby="error-consentimento"><span>Concordo com o uso dos dados informados nesta demonstração local. Não inclua informações reais ou sensíveis.</span></label>
+        <span id="error-consentimento" class="field-error" role="alert"></span>
+        <p class="form-disclaimer">Os valores são ilustrativos. Este pedido e o PDF gerado não constituem proposta comercial.</p>
+        <button id="submit-button" type="submit">Enviar solicitação</button>
+        <div id="message" role="status" aria-live="polite"></div>
+        </div>
+      </section>
     </form>
-    <footer>FluxoPro · Projeto demonstrativo de portfólio</footer>
+
+    <section id="success" class="success-panel" tabindex="-1" hidden aria-labelledby="success-title">
+      <span class="success-kicker">PEDIDO REGISTRADO</span>
+      <h2 id="success-title">Sua solicitação está a caminho.</h2>
+      <p>Guarde o protocolo abaixo. A equipe poderá acompanhar o processamento no painel administrativo.</p>
+      <div class="protocol-box"><span>Protocolo</span><strong id="protocol"></strong></div>
+      <p id="success-status" class="success-status"></p>
+      <button id="new-request" type="button">Fazer nova solicitação</button>
+    </section>
+
+    <footer>FluxoPro · Projeto autoral demonstrativo de portfólio</footer>
   </main>
-  <script src="app.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>

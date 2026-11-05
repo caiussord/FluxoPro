@@ -20,7 +20,8 @@
         <div class="workspace-actions"><span class="edition">PAINEL / 01</span><a href="/">Ver formulário</a><button id="logout" type="button">Sair</button></div>
       </div>
       <div class="workspace-heading"><div><p class="eyebrow">ACOMPANHAMENTO DE ORÇAMENTOS</p><h1 id="page-title">Visão geral</h1><p id="page-subtitle">Acompanhe os pedidos e o andamento da automação.</p></div><span class="badge">Ambiente demonstrativo</span></div>
-      <nav class="workspace-nav" aria-label="Administração">
+      <button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="workspace-nav">Menu</button>
+      <nav id="workspace-nav" class="workspace-nav" aria-label="Administração">
         <button type="button" class="active" data-section="overview">Visão geral</button>
         <button type="button" data-section="quotes">Solicitações</button>
         <button type="button" data-section="services">Serviços e preços</button>
@@ -28,6 +29,7 @@
       </nav>
     </header>
     <main class="admin-main">
+      <div id="admin-message" class="admin-message" role="status" aria-live="polite"></div>
       <section id="section-overview" class="section">
         <div class="stats">
           <div class="stat accent"><span class="label">Solicitações</span><strong id="stat-total">0</strong></div>
@@ -39,14 +41,14 @@
       </section>
       <section id="section-quotes" class="section" hidden>
         <div class="panel"><div class="panel-head"><div><span class="section-kicker">02 / ARQUIVO</span><h2>Solicitações</h2></div><button id="export-csv" class="secondary-button" type="button">Exportar CSV</button></div>
-          <div class="filters"><label>Buscar<input id="search" type="search" maxlength="100" placeholder="Nome, e-mail, serviço ou protocolo"></label><label>Status<select id="status-filter"><option value="">Todos</option><option>Recebida</option><option>Em processamento</option><option>Concluída</option><option>Falha</option></select></label><button id="filter-button" class="secondary-button" type="button">Filtrar</button></div>
+          <div class="filters"><label>Buscar<input id="search" type="search" maxlength="100" placeholder="Nome, e-mail, serviço ou protocolo"></label><label>Status<select id="status-filter"><option value="">Todos</option><option>Recebida</option><option>Em processamento</option><option>Concluída</option><option>Falha</option></select></label><label>Ordenar<select id="sort-filter"><option value="newest">Mais recentes</option><option value="oldest">Mais antigos</option><option value="value_desc">Maior valor</option><option value="value_asc">Menor valor</option></select></label><button id="filter-button" class="secondary-button" type="button">Filtrar</button></div>
           <div class="table-wrap"><table><thead><tr><th>Solicitante</th><th>Serviço</th><th>Valor</th><th>Data</th><th>Status</th><th></th></tr></thead><tbody id="quote-rows"></tbody></table></div>
           <div class="pager"><button id="prev-page" type="button">Anterior</button><span id="page-info">Página 1</span><button id="next-page" type="button">Próxima</button></div>
         </div>
         <div id="quote-detail" class="panel" hidden><div class="panel-head"><div><span class="section-kicker">03 / REGISTRO</span><h2>Detalhes do pedido</h2></div><button id="close-detail" class="text-button" type="button">Fechar</button></div><div id="detail-content"></div><h2 style="margin-top:26px">Histórico</h2><ol id="history-list" class="history"></ol><div id="detail-actions" style="margin-top:16px"></div></div>
       </section>
       <section id="section-services" class="section" hidden><div class="panel"><h2>Serviços e preços</h2><p class="notice">As mudanças valem para novos pedidos. Pedidos anteriores mantêm o valor registrado.</p><div id="service-list"></div><div id="service-message" class="inline-message" role="status"></div></div></section>
-      <section id="section-templates" class="section" hidden><div class="panel"><h2>Modelos de e-mail</h2><p class="notice">Use <code>{{nome}}</code>, <code>{{id}}</code> e <code>{{servico}}</code> como campos variáveis. O n8n usa os modelos ao processar novos pedidos.</p><div id="template-list"></div><div id="template-message" class="inline-message" role="status"></div></div></section>
+      <section id="section-templates" class="section" hidden><div class="panel"><h2>Modelos de e-mail</h2><p class="notice">Use <code>{{nome}}</code>, <code>{{id}}</code> e <code>{{servico}}</code> como campos variáveis. A mensagem editada aparece dentro do layout HTML do FluxoPro e também na versão em texto. O n8n usa os modelos ao processar novos pedidos.</p><div id="template-list"></div><div id="template-message" class="inline-message" role="status"></div></div></section>
     </main>
   </div>
   <script src="/admin.js"></script>

@@ -73,13 +73,19 @@ public sealed class QuoteRepository
             using (var seed = Command(db, "INSERT OR IGNORE INTO services(name,price) VALUES($n,$p)", tx, ("$n", name), ("$p", price.ToString(CultureInfo.InvariantCulture)))) await seed.ExecuteNonQueryAsync();
         foreach (var template in DefaultTemplates)
             using (var seed = Command(db, "INSERT OR IGNORE INTO email_templates(key,subject,body) VALUES($k,$s,$b)", tx, ("$k", template.Chave), ("$s", template.Assunto), ("$b", template.Corpo))) await seed.ExecuteNonQueryAsync();
+        using (var refresh = Command(db, "UPDATE email_templates SET body=$new WHERE key='cliente' AND body=$old", tx,
+            ("$new", DefaultTemplates[0].Corpo), ("$old", "Olá, {{nome}}. Recebemos sua solicitação demonstrativa. O PDF está em anexo. Este documento não tem validade comercial.")))
+            await refresh.ExecuteNonQueryAsync();
+        using (var refresh = Command(db, "UPDATE email_templates SET body=$new WHERE key='equipe' AND body=$old", tx,
+            ("$new", DefaultTemplates[1].Corpo), ("$old", "Nova solicitação demonstrativa de {{nome}}. Consulte a API para detalhes.")))
+            await refresh.ExecuteNonQueryAsync();
         using (var history = Command(db, "INSERT INTO quote_history(quote_id,at,from_status,to_status,source,detail) SELECT q.id,q.created,NULL,q.status,'migração','Registro anterior ao histórico' FROM quotes q WHERE NOT EXISTS (SELECT 1 FROM quote_history h WHERE h.quote_id=q.id)", tx)) await history.ExecuteNonQueryAsync();
         tx.Commit();
     }
 
     public static readonly EmailTemplate[] DefaultTemplates = [
-        new("cliente", "Orçamento demonstrativo FluxoPro - {{id}}", "Olá, {{nome}}. Recebemos sua solicitação demonstrativa. O PDF está em anexo. Este documento não tem validade comercial."),
-        new("equipe", "Nova solicitação FluxoPro - {{id}}", "Nova solicitação demonstrativa de {{nome}}. Consulte a API para detalhes.")
+        new("cliente", "Orçamento demonstrativo FluxoPro - {{id}}", "Olá, {{nome}}. Obrigado por detalhar seu projeto. A solicitação de {{servico}} foi registrada e está sendo processada."),
+        new("equipe", "Nova solicitação FluxoPro - {{id}}", "O pedido de {{nome}} para {{servico}} está pronto para acompanhamento no painel.")
     ];
 
     public async Task<Dictionary<string, decimal>> ActivePrices()
@@ -148,14 +154,21 @@ public sealed class QuoteRepository
         return await r.ReadAsync() ? Read(r) : null;
     }
 
-    public async Task<QuotePage> Search(string? search, string? status, int page, int pageSize)
+    public async Task<QuotePage> Search(string? search, string? status, int page, int pageSize, string sort = "newest")
     {
         page = Math.Max(1, page); pageSize = Math.Clamp(pageSize, 1, 5000); search = search?.Trim();
         const string filter = "WHERE ($status IS NULL OR status=$status) AND ($search IS NULL OR name LIKE $pattern OR email LIKE $pattern OR service LIKE $pattern OR id LIKE $pattern)";
         using var db = Open();
         using var count = Command(db, "SELECT COUNT(*) FROM quotes " + filter, null, ("$status", string.IsNullOrWhiteSpace(status) ? null : status), ("$search", string.IsNullOrWhiteSpace(search) ? null : search), ("$pattern", "%" + search + "%"));
         var total = Convert.ToInt32(await count.ExecuteScalarAsync(), CultureInfo.InvariantCulture);
-        using var cmd = Command(db, $"SELECT {QuoteColumns} FROM quotes {filter} ORDER BY created DESC LIMIT $limit OFFSET $offset", null,
+        var order = sort switch
+        {
+            "oldest" => "created ASC, id ASC",
+            "value_desc" => "CAST(value AS REAL) DESC, created DESC, id DESC",
+            "value_asc" => "CAST(value AS REAL) ASC, created DESC, id DESC",
+            _ => "created DESC, id DESC"
+        };
+        using var cmd = Command(db, $"SELECT {QuoteColumns} FROM quotes {filter} ORDER BY {order} LIMIT $limit OFFSET $offset", null,
             ("$status", string.IsNullOrWhiteSpace(status) ? null : status), ("$search", string.IsNullOrWhiteSpace(search) ? null : search), ("$pattern", "%" + search + "%"),
             ("$limit", pageSize), ("$offset", (page - 1) * pageSize));
         using var r = await cmd.ExecuteReaderAsync(); var items = new List<Quote>(); while (await r.ReadAsync()) items.Add(Read(r));
@@ -231,15 +244,20 @@ public sealed class QuoteRepository
     {
         using var db = Open(); using var tx = db.BeginTransaction();
         using var cmd = Command(db, success
-            ? "UPDATE quotes SET attempts=attempts+1,next_dispatch=NULL,lease_owner=NULL,lease_until=NULL,updated=$now WHERE id=$id AND lease_owner=$owner AND status='Recebida'"
+            ? "UPDATE quotes SET attempts=attempts+1,next_dispatch=CASE WHEN attempts+1>=5 THEN NULL ELSE $next END,status=CASE WHEN attempts+1>=5 THEN 'Falha' ELSE status END,last_error=CASE WHEN attempts+1>=5 THEN 'Webhook aceito sem início do processamento' ELSE NULL END,lease_owner=NULL,lease_until=NULL,updated=$now WHERE id=$id AND lease_owner=$owner AND status='Recebida'"
             : "UPDATE quotes SET attempts=attempts+1,next_dispatch=CASE WHEN attempts+1>=5 THEN NULL ELSE $next END,status=CASE WHEN attempts+1>=5 THEN 'Falha' ELSE status END,last_error=$error,lease_owner=NULL,lease_until=NULL,updated=$now WHERE id=$id AND lease_owner=$owner AND status='Recebida'", tx,
             ("$id", id.ToString()), ("$owner", owner), ("$now", DateTimeOffset.UtcNow.ToString("O")), ("$next", DateTimeOffset.UtcNow.AddMinutes(2).ToString("O")), ("$error", error?[..Math.Min(error.Length, 300)]));
         var changed = await cmd.ExecuteNonQueryAsync() == 1;
-        if (changed && !success)
+        if (changed)
         {
-            using var status = Command(db, "SELECT status FROM quotes WHERE id=$id", tx, ("$id", id.ToString()));
-            var current = (string?)await status.ExecuteScalarAsync();
-            await AddHistory(db, tx, id, QuoteStatus.Received, current ?? QuoteStatus.Received, "dispatcher", error);
+            using var state = Command(db, "SELECT status,last_error FROM quotes WHERE id=$id", tx, ("$id", id.ToString()));
+            using var reader = await state.ExecuteReaderAsync();
+            await reader.ReadAsync();
+            var current = reader.GetString(0);
+            var detail = reader.IsDBNull(1) ? null : reader.GetString(1);
+            reader.Close();
+            if (current == QuoteStatus.Failed || !success)
+                await AddHistory(db, tx, id, QuoteStatus.Received, current, "dispatcher", detail);
         }
         tx.Commit();
     }

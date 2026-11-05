@@ -1,3 +1,9 @@
+param(
+    [ValidateRange(1, 65535)][int]$Port = 5187,
+    [string]$DatabasePath,
+    [string]$WebhookUrl
+)
+
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $envFile = Join-Path $projectRoot '.env'
 if (-not (Test-Path -LiteralPath $envFile)) {
@@ -7,4 +13,6 @@ Get-Content -LiteralPath $envFile | Where-Object { $_ -match '^[A-Z0-9_]+=' } | 
     $entry = $_.Split('=', 2)
     [Environment]::SetEnvironmentVariable($entry[0], $entry[1], 'Process')
 }
-dotnet run --project (Join-Path $projectRoot 'src/FluxoPro.Api') --urls 'http://0.0.0.0:5187'
+if ($DatabasePath) { $env:FLUXOPRO_DB_PATH = $DatabasePath }
+if ($PSBoundParameters.ContainsKey('WebhookUrl')) { $env:FLUXOPRO_N8N_WEBHOOK_URL = $WebhookUrl }
+dotnet run --project (Join-Path $projectRoot 'src/FluxoPro.Api') --urls "http://127.0.0.1:$Port"

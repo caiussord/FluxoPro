@@ -35,10 +35,10 @@ public static class AdminEndpoints
         admin.MapGet("/session", () => Results.Ok(new { authenticated = true }));
         admin.MapPost("/logout", async (HttpContext context) => { await context.SignOutAsync("Admin"); return Results.NoContent(); });
         admin.MapGet("/overview", async (QuoteRepository db) => Results.Ok(await db.Overview()));
-        admin.MapGet("/quotes", async (string? search, string? status, int? page, QuoteRepository db) =>
+        admin.MapGet("/quotes", async (string? search, string? status, string? sort, int? page, QuoteRepository db) =>
         {
-            if (search?.Length > 100 || !ValidStatus(status)) return Results.BadRequest(new { erro = "Filtro inválido." });
-            return Results.Ok(await db.Search(search, status, page ?? 1, 20));
+            if (search?.Length > 100 || !ValidStatus(status) || !ValidSort(sort)) return Results.BadRequest(new { erro = "Filtro inválido." });
+            return Results.Ok(await db.Search(search, status, page ?? 1, 20, sort ?? "newest"));
         });
         admin.MapGet("/quotes/{id:guid}", async (Guid id, QuoteRepository db) =>
         {
@@ -64,10 +64,10 @@ public static class AdminEndpoints
                 return Results.BadRequest(new { erro = "Assunto ou corpo fora dos limites." });
             return await db.UpdateTemplate(key, input) ? Results.NoContent() : Results.NotFound();
         });
-        admin.MapGet("/export.csv", async (string? search, string? status, QuoteRepository db) =>
+        admin.MapGet("/export.csv", async (string? search, string? status, string? sort, QuoteRepository db) =>
         {
-            if (search?.Length > 100 || !ValidStatus(status)) return Results.BadRequest(new { erro = "Filtro inválido." });
-            var quotes = (await db.Search(search, status, 1, 5000)).Items;
+            if (search?.Length > 100 || !ValidStatus(status) || !ValidSort(sort)) return Results.BadRequest(new { erro = "Filtro inválido." });
+            var quotes = (await db.Search(search, status, 1, 5000, sort ?? "newest")).Items;
             var csv = new StringBuilder("ID;Criado em;Nome;Email;Serviço;Quantidade;Valor estimado;Status\r\n");
             foreach (var q in quotes)
                 csv.AppendLine(string.Join(';', Csv(q.Id.ToString()), Csv(q.CriadoEm.ToString("O")), Csv(q.Nome), Csv(q.Email), Csv(q.Servico), q.Quantidade, q.ValorEstimado.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture), Csv(q.Status)));
@@ -76,10 +76,11 @@ public static class AdminEndpoints
     }
 
     private static bool ValidStatus(string? status) => string.IsNullOrWhiteSpace(status) || status is QuoteStatus.Received or QuoteStatus.Processing or QuoteStatus.Completed or QuoteStatus.Failed;
+    private static bool ValidSort(string? sort) => sort is null or "newest" or "oldest" or "value_desc" or "value_asc";
     private static string Csv(string value)
     {
-        value = value.Replace('\r', ' ').Replace('\n', ' ');
-        if (value.Length > 0 && "=+-@".Contains(value[0])) value = "'" + value;
+        value = value.Replace('\r', ' ').Replace('\n', ' ').Replace('\t', ' ');
+        if (value.TrimStart().Length > 0 && "=+-@".Contains(value.TrimStart()[0])) value = "'" + value;
         return "\"" + value.Replace("\"", "\"\"") + "\"";
     }
 }

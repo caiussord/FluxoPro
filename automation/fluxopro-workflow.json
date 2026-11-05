@@ -118,10 +118,12 @@
         "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
         "toEmail": "={{$('Consultar solicitação').first().json.email}}",
         "subject": "={{$('Consultar mensagens').first().json.cliente.assunto}}",
-        "emailFormat": "text",
-        "text": "={{$('Consultar mensagens').first().json.cliente.corpo}}",
+        "emailFormat": "both",
+        "text": "={{$('Consultar mensagens').first().json.cliente.texto}}",
+        "html": "={{$('Consultar mensagens').first().json.cliente.html}}",
         "options": {
-          "attachments": "data"
+          "attachments": "data",
+          "appendAttribution": false
         }
       },
       "retryOnFail": false,
@@ -142,9 +144,10 @@
         "fromEmail": "={{$env.FLUXOPRO_FROM_EMAIL}}",
         "toEmail": "={{$env.FLUXOPRO_TEAM_EMAIL}}",
         "subject": "={{$('Consultar mensagens').first().json.equipe.assunto}}",
-        "emailFormat": "text",
-        "text": "={{$('Consultar mensagens').first().json.equipe.corpo}}",
-        "options": {}
+        "emailFormat": "both",
+        "text": "={{$('Consultar mensagens').first().json.equipe.texto}}",
+        "html": "={{$('Consultar mensagens').first().json.equipe.html}}",
+        "options": { "appendAttribution": false }
       },
       "retryOnFail": false,
       "maxTries": 3,

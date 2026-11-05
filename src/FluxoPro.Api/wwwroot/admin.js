@@ -3,6 +3,13 @@ const currency = value => Number(value).toLocaleString('pt-BR', { style: 'curren
 const date = value => new Date(value).toLocaleString('pt-BR');
 let currentPage = 1;
 let currentTotal = 0;
+let currentSection = 'overview';
+
+function notice(text = '', kind = '') {
+  const target = $('#admin-message');
+  target.textContent = text;
+  target.className = `admin-message ${kind}`;
+}
 
 async function api(path, options = {}) {
   const response = await fetch('/api/admin' + path, {
@@ -48,9 +55,12 @@ async function loadOverview() {
   $('#stat-pending').textContent = stats['Recebida'] + stats['Em processamento'];
   $('#stat-failed').textContent = stats['Falha'];
   $('#recent-rows').replaceChildren(...quotes.items.slice(0, 5).map(q => rowFor(q, true)));
+  if (!quotes.items.length) {
+    const row = document.createElement('tr'); const cell = td('Ainda não há solicitações. Os novos pedidos aparecerão aqui.'); cell.colSpan = 5; row.append(cell); $('#recent-rows').append(row);
+  }
 }
 async function loadQuotes() {
-  const params = new URLSearchParams({ page: String(currentPage), search: $('#search').value.trim(), status: $('#status-filter').value });
+  const params = new URLSearchParams({ page: String(currentPage), search: $('#search').value.trim(), status: $('#status-filter').value, sort: $('#sort-filter').value });
   const response = await api('/quotes?' + params);
   const result = await response.json(); currentTotal = result.total;
   $('#quote-rows').replaceChildren(...result.items.map(q => rowFor(q)));
@@ -60,6 +70,11 @@ async function loadQuotes() {
   if (!result.items.length) {
     const row = document.createElement('tr'); const cell = td('Nenhuma solicitação encontrada.'); cell.colSpan = 6; row.append(cell); $('#quote-rows').append(row);
   }
+}
+async function refreshQuotes() {
+  notice('Carregando solicitações…', 'loading');
+  try { await loadQuotes(); notice(); }
+  catch (error) { notice(`Não foi possível carregar as solicitações. ${error.message}`, 'error'); }
 }
 function field(label, value) {
   const item = document.createElement('div'), caption = document.createElement('span'), strong = document.createElement('strong');
@@ -77,7 +92,12 @@ async function openDetail(id) {
   $('#detail-actions').replaceChildren();
   if (quote.status === 'Falha' && !quote.pdfGerado) {
     const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'secondary-button'; retry.textContent = 'Reenviar solicitação';
-    retry.addEventListener('click', async () => { try { await api('/quotes/' + id + '/retry', { method: 'POST' }); await openDetail(id); await loadQuotes(); } catch (error) { alert(error.message); } });
+    retry.addEventListener('click', async () => {
+      if (!confirm('Reagendar esta solicitação? O fluxo poderá enviar e-mails de teste novamente.')) return;
+      retry.disabled = true;
+      try { await api('/quotes/' + id + '/retry', { method: 'POST' }); await openDetail(id); await loadQuotes(); notice('Solicitação reagendada para processamento.', 'success'); }
+      catch (error) { notice(error.message, 'error'); retry.disabled = false; }
+    });
     $('#detail-actions').append(retry);
   }
   $('#quote-detail').hidden = false;
@@ -114,16 +134,20 @@ async function loadTemplates() {
   }
 }
 async function showSection(name) {
+  currentSection = name;
   document.querySelectorAll('.section').forEach(section => { section.hidden = section.id !== 'section-' + name; });
   document.querySelectorAll('[data-section]').forEach(button => button.classList.toggle('active', button.dataset.section === name));
+  $('#workspace-nav').classList.remove('is-open'); $('#nav-toggle').setAttribute('aria-expanded', 'false');
   const titles = { overview: ['Visão geral', 'Acompanhe os pedidos e o andamento da automação.'], quotes: ['Solicitações', 'Busque pedidos e consulte o histórico de cada um.'], services: ['Serviços e preços', 'Configure os valores usados nos próximos orçamentos.'], templates: ['E-mails', 'Edite as mensagens enviadas pelo workflow.'] };
   $('#page-title').textContent = titles[name][0]; $('#page-subtitle').textContent = titles[name][1];
+  notice('Carregando dados…', 'loading');
   try {
     if (name === 'overview') await loadOverview();
     if (name === 'quotes') await loadQuotes();
     if (name === 'services') await loadServices();
     if (name === 'templates') await loadTemplates();
-  } catch (error) { console.error(error); }
+    if (currentSection === name) notice();
+  } catch (error) { if (currentSection === name) notice(`Não foi possível carregar os dados. ${error.message}`, 'error'); }
 }
 
 $('#login-form').addEventListener('submit', async event => {
@@ -133,17 +157,19 @@ $('#login-form').addEventListener('submit', async event => {
   finally { button.disabled = false; }
 });
 document.querySelectorAll('[data-section]').forEach(button => button.addEventListener('click', () => showSection(button.dataset.section)));
-$('#filter-button').addEventListener('click', () => { currentPage = 1; loadQuotes(); });
-$('#search').addEventListener('keydown', event => { if (event.key === 'Enter') { currentPage = 1; loadQuotes(); } });
-$('#prev-page').addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadQuotes(); } });
-$('#next-page').addEventListener('click', () => { if (currentPage * 20 < currentTotal) { currentPage++; loadQuotes(); } });
+$('#nav-toggle').addEventListener('click', () => { const open = $('#workspace-nav').classList.toggle('is-open'); $('#nav-toggle').setAttribute('aria-expanded', String(open)); });
+$('#filter-button').addEventListener('click', () => { currentPage = 1; refreshQuotes(); });
+$('#search').addEventListener('keydown', event => { if (event.key === 'Enter') { currentPage = 1; refreshQuotes(); } });
+$('#sort-filter').addEventListener('change', () => { currentPage = 1; refreshQuotes(); });
+$('#prev-page').addEventListener('click', () => { if (currentPage > 1) { currentPage--; refreshQuotes(); } });
+$('#next-page').addEventListener('click', () => { if (currentPage * 20 < currentTotal) { currentPage++; refreshQuotes(); } });
 $('#close-detail').addEventListener('click', () => { $('#quote-detail').hidden = true; });
 $('#logout').addEventListener('click', async () => { try { await api('/logout', { method: 'POST' }); } finally { showLogin(); } });
 $('#export-csv').addEventListener('click', async () => {
   try {
-    const params = new URLSearchParams({ search: $('#search').value.trim(), status: $('#status-filter').value });
+    const params = new URLSearchParams({ search: $('#search').value.trim(), status: $('#status-filter').value, sort: $('#sort-filter').value });
     const response = await api('/export.csv?' + params); const url = URL.createObjectURL(await response.blob());
     const link = document.createElement('a'); link.href = url; link.download = 'solicitacoes-fluxopro.csv'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-  } catch (error) { alert(error.message); }
+  } catch (error) { notice(error.message, 'error'); }
 });
 api('/session').then(() => showAdmin()).catch(() => showLogin());

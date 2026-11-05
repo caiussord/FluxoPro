@@ -37,7 +37,10 @@ public static class InternalEndpoints
             var templates = await db.Templates();
             var rendered = templates.ToDictionary(t => t.Chave, t => new
             {
-                assunto = Render(t.Assunto, quote), corpo = Render(t.Corpo, quote)
+                assunto = Render(t.Assunto, quote),
+                corpo = Render(t.Corpo, quote),
+                texto = EmailComposer.Text(quote, Render(t.Corpo, quote), t.Chave == "equipe"),
+                html = EmailComposer.Html(quote, Render(t.Corpo, quote), t.Chave == "equipe")
             });
             return Results.Ok(rendered);
         });

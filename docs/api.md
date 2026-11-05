@@ -27,7 +27,7 @@ Todas as rotas abaixo exigem `X-Internal-Key` com o valor de `FLUXOPRO_INTERNAL_
 | GET | `/api/solicitacoes/{id}` | Dados e status |
 | POST | `/api/solicitacoes/{id}/iniciar` | Reserva processamento; `409` se já iniciado |
 | POST | `/api/solicitacoes/{id}/gerar-pdf` | PDF somente durante processamento |
-| GET | `/api/solicitacoes/{id}/mensagens` | Assunto e corpo dos templates `cliente` e `equipe` |
+| GET | `/api/solicitacoes/{id}/mensagens` | Para `cliente` e `equipe`: `assunto`, `corpo` editável, `texto` completo e `html` com a identidade visual |
 | PATCH | `/api/solicitacoes/{id}/status` | Aceita `Concluída` ou `Falha` se a transição for permitida |
 
 Para concluir, o PDF precisa ter sido gerado. Estados terminais não aceitam nova transição pelo workflow. Uma tentativa inválida retorna `409`.
@@ -42,7 +42,7 @@ Abra `/admin`. Configure `FLUXOPRO_ADMIN_PASSWORD` com pelo menos 16 caracteres.
 | GET | `/api/admin/session` | Verifica sessão |
 | POST | `/api/admin/logout` | Encerra sessão |
 | GET | `/api/admin/overview` | Contagem por status |
-| GET | `/api/admin/quotes?search=&status=&page=` | Busca paginada, 20 por página |
+| GET | `/api/admin/quotes?search=&status=&sort=&page=` | Busca paginada, 20 por página |
 | GET | `/api/admin/quotes/{id}` | Pedido e histórico |
 | GET | `/api/admin/quotes/{id}/pdf` | Cópia demonstrativa do PDF |
 | POST | `/api/admin/quotes/{id}/retry` | Reagenda falha anterior à geração do PDF |
@@ -50,6 +50,8 @@ Abra `/admin`. Configure `FLUXOPRO_ADMIN_PASSWORD` com pelo menos 16 caracteres.
 | PUT | `/api/admin/services/{name}` | Atualiza `{ "preco": 500, "ativo": true }` |
 | GET | `/api/admin/templates` | Lista templates |
 | PUT | `/api/admin/templates/{key}` | Atualiza `{ "assunto": "...", "corpo": "..." }` |
-| GET | `/api/admin/export.csv?search=&status=` | Exporta até 5.000 pedidos filtrados |
+| GET | `/api/admin/export.csv?search=&status=&sort=` | Exporta até 5.000 pedidos filtrados |
+
+`sort` aceita `newest` (padrão), `oldest`, `value_desc` e `value_asc`. Valores desconhecidos retornam `400`. Os dados históricos do pedido usam o preço registrado no cadastro, mesmo após a edição do serviço.
 
 Os templates aceitam `{{id}}`, `{{nome}}` e `{{servico}}`. A edição só afeta os e-mails após importar a versão atualizada de `automation/fluxopro-workflow.json` no n8n.

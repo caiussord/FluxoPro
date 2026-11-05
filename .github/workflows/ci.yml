@@ -14,7 +14,13 @@ jobs:
           dotnet-version: 10.0.x
       - name: Restore
         run: dotnet restore FluxoPro.slnx
-      - name: Build and test
-        run: dotnet test FluxoPro.slnx --no-restore --configuration Release
+      - name: Build
+        run: dotnet build FluxoPro.slnx --no-restore --configuration Release
+      - name: Test
+        run: dotnet test FluxoPro.slnx --no-build --configuration Release
+      - name: Validate browser scripts
+        run: |
+          node --check src/FluxoPro.Api/wwwroot/app.js
+          node --check src/FluxoPro.Api/wwwroot/admin.js
       - name: Validate workflow JSON
         run: python3 -m json.tool automation/fluxopro-workflow.json > /dev/null

@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap');
+
+.public-page {
+  --paper: #f1f0e9;
+  --deep: #102c25;
+  --acid: #d4e879;
+  --rule: #c9d0c5;
+  --subtle: #536b5d;
+  background: var(--paper);
+  color: var(--deep);
+}
+.public-page [hidden] { display: none !important; }
+.public-page .shell { max-width: none; padding: 0; }
+.public-page .intro { min-height: 82px; padding: 0 clamp(24px, 3.5vw, 72px); background: var(--deep); color: #f8f9ef; border-bottom: 1px solid #ffffff36; }
+.public-page .brand { color: #f8f9ef; }
+.public-page .brand span { color: var(--acid); }
+.public-page .nav-right { gap: 26px; }
+.public-page .tag { border-color: #6d9078; color: #d0e0ce; border-radius: 2px; font-size: 10px; }
+.public-page .admin-link { color: #f8f9ef; border-bottom: 1px solid #9bbc9a; padding-bottom: 3px; }
+.public-page .hero { max-width: none; background: var(--deep); color: #f8f9ef; padding: 68px clamp(24px, 3.5vw, 72px) 58px; }
+.public-page .hero .eyebrow { color: var(--acid); font-size: 11px; }
+.public-page .hero h1 { max-width: 900px; font: 500 clamp(48px, 6.5vw, 92px)/1.02 'Fraunces', Georgia, serif; letter-spacing: -.055em; margin: 20px 0; }
+.public-page .hero p:last-of-type { max-width: 680px; color: #b5cabd; line-height: 1.6; font-size: 17px; }
+.public-page .hero-note { display: flex; flex-wrap: wrap; gap: 12px 20px; color: #c4d5c7; border-top: 1px solid #ffffff36; margin-top: 42px; padding-top: 21px; font-size: 12px; }
+.public-page .hero-note span { color: var(--acid); font-weight: 800; margin-right: -15px; }
+.public-page .quote-form { display: block; width: 100%; padding: 30px clamp(24px, 3.5vw, 72px) 55px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.public-page .form-section { display: grid; grid-template-columns: minmax(220px, 30%) minmax(0,1fr); gap: 40px; padding: 36px 0 45px; border-top: 2px solid var(--deep); }
+.public-page .form-section + .form-section { border-top: 1px solid var(--rule); }
+.public-page .form-section-head > span { display: block; color: #547361; font-size: 10px; letter-spacing: .18em; font-weight: 800; margin-bottom: 12px; }
+.public-page .form-section-head h2 { font: 500 clamp(28px, 2.5vw, 38px)/1.12 'Fraunces', Georgia, serif; letter-spacing: -.035em; margin: 0 0 10px; max-width: 330px; }
+.public-page .form-section-head p { color: var(--subtle); font-size: 13px; line-height: 1.5; margin: 0; }
+.public-page .form-section-body { display: grid; gap: 21px; min-width: 0; }
+.public-page .field { display: grid; align-content: start; gap: 7px; }
+.public-page .field label { color: #2a4c39; font-size: 13px; }
+.public-page .field small { font-size: 12px; }
+.public-page input:not([type=checkbox]), .public-page select, .public-page textarea { background: #fbfcf8; border: 1px solid #aebfad; border-radius: 3px; padding: 15px 16px; font-size: 15px; }
+.public-page input:focus-visible, .public-page select:focus-visible, .public-page textarea:focus-visible, .public-page button:focus-visible, .public-page a:focus-visible { outline: 3px solid #b3d77d; outline-offset: 3px; }
+.public-page [aria-invalid=true] { border-color: #b34237 !important; }
+.public-page .field-error { min-height: 0; color: #a33f35; font-size: 12px; line-height: 1.35; }
+.public-page .field-error:not(:empty) { margin-top: 1px; }
+.public-page .grid { gap: 20px; }
+.public-page .estimate { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 22px; border-radius: 2px; background: #dde8d8; }
+.public-page .estimate span { color: #2a4c39; font-size: 13px; font-weight: 800; }
+.public-page .estimate small { display: block; margin-top: 6px; color: var(--subtle); font-size: 12px; }
+.public-page .estimate strong { color: var(--deep); font: 500 clamp(20px, 2.2vw, 28px) 'Fraunces', Georgia, serif; white-space: nowrap; }
+.public-page .review-section .check { display: flex; gap: 12px; color: #345847; font-size: 13px; }
+.public-page .review-section .check input { accent-color: #315b38; }
+.public-page .form-disclaimer { color: var(--subtle); font-size: 12px; line-height: 1.5; margin: 0; }
+.public-page #submit-button, .public-page #new-request { width: fit-content; min-width: 220px; display: inline-flex; justify-content: center; border: 0; border-radius: 2px; background: var(--deep); color: #f8f9ef; padding: 15px 24px; font-weight: 700; }
+.public-page #submit-button:hover, .public-page #new-request:hover { background: #22523c; }
+.public-page #submit-button:disabled { opacity: .65; cursor: wait; }
+.public-page #message { min-height: 0; font-size: 13px; }
+.public-page .success-panel { margin: 42px clamp(24px, 3.5vw, 72px) 68px; padding: clamp(28px, 5vw, 64px); background: #fdfef8; border-top: 3px solid var(--deep); }
+.public-page .success-kicker { color: #4d7358; font-size: 11px; font-weight: 800; letter-spacing: .18em; }
+.public-page .success-panel h2 { font: 500 clamp(38px, 4.5vw, 65px)/1.08 'Fraunces', Georgia, serif; letter-spacing: -.04em; max-width: 720px; margin: 13px 0; }
+.public-page .success-panel p { color: var(--subtle); line-height: 1.55; }
+.public-page .protocol-box { display: grid; gap: 8px; width: fit-content; max-width: 100%; background: #e3ebdd; padding: 18px 24px; margin: 24px 0; }
+.public-page .protocol-box span { color: #496953; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+.public-page .protocol-box strong { overflow-wrap: anywhere; font-size: 18px; }
+.public-page footer { padding: 30px; border-top: 1px solid var(--rule); }
+
+@media (max-width: 900px) {
+  .public-page .form-section { grid-template-columns: 1fr; gap: 25px; }
+  .public-page .form-section-head h2 { max-width: none; }
+}
+@media (max-width: 600px) {
+  .public-page .intro { min-height: 70px; padding: 0 16px; }
+  .public-page .brand { font-size: 21px; }
+  .public-page .nav-right { gap: 10px; }
+  .public-page .admin-link { font-size: 11px; }
+  .public-page .hero { padding: 48px 16px 36px; }
+  .public-page .hero h1 { font-size: 48px; }
+  .public-page .hero-note { margin-top: 30px; }
+  .public-page .quote-form { padding: 18px 16px 45px; }
+  .public-page .form-section { padding: 29px 0 35px; }
+  .public-page .grid { grid-template-columns: 1fr; gap: 16px; }
+  .public-page .estimate { display: grid; }
+  .public-page .estimate strong { white-space: normal; }
+  .public-page #submit-button, .public-page #new-request { width: 100%; }
+  .public-page .success-panel { margin: 20px 16px 50px; padding: 25px; }
+}

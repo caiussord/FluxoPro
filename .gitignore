@@ -9,3 +9,26 @@
 .env.*
 !.env.example
 node_modules/
+
+# Planejamento e notas locais (não fazem parte do portfólio público)
+/PROJETO_02_FLUXOPRO_AUTOMACAO.md
+/FLUXOPRO_PLANO_MELHORIAS_PORTFOLIO.md
+/docs/portfolio-pendencias.md
+/docs/private/
+/docs/drafts/
+*.local.md
+
+# Arquivos gerados e configurações do editor
+*.zip
+*.log
+*.bak
+*.tmp
+**/TestResults/
+coverage/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+Thumbs.db
+.DS_Store
