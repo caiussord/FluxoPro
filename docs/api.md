@@ -44,7 +44,7 @@ Abra `/admin`. Configure `FLUXOPRO_ADMIN_PASSWORD` com pelo menos 16 caracteres.
 | GET | `/api/admin/overview` | Contagem por status |
 | GET | `/api/admin/quotes?search=&status=&sort=&page=` | Busca paginada, 20 por página |
 | GET | `/api/admin/quotes/{id}` | Pedido e histórico |
-| GET | `/api/admin/quotes/{id}/pdf` | Cópia demonstrativa do PDF |
+| GET | `/api/admin/quotes/{id}/pdf` | Gera e baixa uma cópia demonstrativa com os dados registrados, inclusive no estado `Recebida`; não altera status nem marca o PDF do workflow como gerado |
 | POST | `/api/admin/quotes/{id}/retry` | Reagenda falha anterior à geração do PDF |
 | GET | `/api/admin/services` | Serviços e preços |
 | PUT | `/api/admin/services/{name}` | Atualiza `{ "preco": 500, "ativo": true }` |

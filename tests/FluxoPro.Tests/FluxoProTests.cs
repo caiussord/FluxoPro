@@ -126,6 +126,28 @@ public class FluxoProTests
     }
 
     [Fact]
+    public async Task AdminDownloadsReceivedQuotePdfWithoutAdvancingWorkflow()
+    {
+        using var factory = Factory(TempDb()); using var client = factory.CreateClient();
+        var id = await Create(client, "admin-pdf-001");
+        var path = $"/api/admin/quotes/{id}/pdf";
+        using (var unauthenticated = await client.GetAsync(path))
+            Assert.Equal(HttpStatusCode.Unauthorized, unauthenticated.StatusCode);
+        using (var login = await client.PostAsJsonAsync("/api/admin/login", new AdminLogin("admin-test-password-123456")))
+            Assert.Equal(HttpStatusCode.NoContent, login.StatusCode);
+        using var download = await client.GetAsync(path);
+        Assert.Equal(HttpStatusCode.OK, download.StatusCode);
+        Assert.Equal("application/pdf", download.Content.Headers.ContentType?.MediaType);
+        Assert.Equal($"orcamento-{id:N}.pdf", download.Content.Headers.ContentDisposition?.FileName);
+        var bytes = await download.Content.ReadAsByteArrayAsync();
+        Assert.Equal("%PDF", System.Text.Encoding.ASCII.GetString(bytes, 0, 4));
+        var detail = await client.GetFromJsonAsync<JsonElement>($"/api/admin/quotes/{id}");
+        Assert.Equal(QuoteStatus.Received, detail.GetProperty("quote").GetProperty("status").GetString());
+        Assert.False(detail.GetProperty("quote").GetProperty("pdfGerado").GetBoolean());
+        Assert.Single(detail.GetProperty("history").EnumerateArray());
+    }
+
+    [Fact]
     public async Task AdminCanFilterAndEditFuturePricesAndTemplates()
     {
         using var factory = Factory(TempDb()); using var client = factory.CreateClient();

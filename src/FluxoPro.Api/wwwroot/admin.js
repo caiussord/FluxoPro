@@ -17,7 +17,8 @@ async function api(path, options = {}) {
     ...options,
     headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), 'X-FluxoPro-Admin': '1', ...(options.headers || {}) }
   });
-  if (response.status === 401) { showLogin(); throw new Error('Sessão encerrada. Entre novamente.'); }
+  if (response.status === 401) { showLogin(); throw new Error(path === '/login' ? 'Senha incorreta.' : 'Sessão encerrada. Entre novamente.'); }
+  if (response.status === 429) throw new Error('Muitas tentativas de acesso. Aguarde até 5 minutos e tente novamente.');
   if (!response.ok) {
     let detail = null;
     try { detail = await response.json(); } catch { /* resposta vazia */ }
@@ -90,6 +91,23 @@ async function openDetail(id) {
     const small = document.createElement('small'); small.textContent = `${date(entry.em)}${entry.detalhe ? ' · ' + entry.detalhe : ''}`; li.append(small); return li;
   }); $('#history-list').replaceChildren(...entries);
   $('#detail-actions').replaceChildren();
+  const download = document.createElement('button'); download.type = 'button'; download.className = 'secondary-button'; download.textContent = 'Baixar PDF';
+  download.addEventListener('click', async () => {
+    download.disabled = true;
+    try {
+      const response = await api('/quotes/' + encodeURIComponent(id) + '/pdf');
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement('a'); link.href = url; link.download = `orcamento-${id.replaceAll('-', '')}.pdf`;
+      document.body.append(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (error) { notice(`Não foi possível baixar o PDF. ${error.message}`, 'error'); }
+    finally { download.disabled = false; }
+  });
+  $('#detail-actions').append(download);
+  if (!quote.pdfGerado) {
+    const note = document.createElement('span'); note.className = 'pdf-note'; note.textContent = 'Cópia sob demanda; não altera o andamento da solicitação.';
+    $('#detail-actions').append(note);
+  }
   if (quote.status === 'Falha' && !quote.pdfGerado) {
     const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'secondary-button'; retry.textContent = 'Reenviar solicitação';
     retry.addEventListener('click', async () => {
