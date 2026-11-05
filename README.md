@@ -50,6 +50,12 @@ O PDF apresenta serviço, quantidade e valor ilustrativo. A confirmação por e-
 
 Veja também o [PDF demonstrativo completo](docs/exemplo-orcamento.pdf).
 
+### Automação no n8n
+
+O workflow recebe a solicitação, consulta a API, pede a geração do PDF e encaminha os e-mails de confirmação e aviso à equipe.
+
+![Workflow real do FluxoPro no n8n, da solicitação ao envio de e-mails](docs/images/11-workflow-n8n.png)
+
 ## Sobre o projeto
 
 O FluxoPro é uma demonstração autoral para apresentar uma solução de gestão e automação de orçamentos. As capturas mostram a aplicação em funcionamento com dados fictícios; não representam clientes ou resultados comerciais.
