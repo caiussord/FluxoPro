@@ -1,0 +1,16 @@
+.git
+.github
+.vs
+.vscode
+.env
+.env.*
+!.env.example
+**/bin
+**/obj
+**/node_modules
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite3
+*.zip
