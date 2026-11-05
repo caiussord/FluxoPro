@@ -104,10 +104,6 @@ async function openDetail(id) {
     finally { download.disabled = false; }
   });
   $('#detail-actions').append(download);
-  if (!quote.pdfGerado) {
-    const note = document.createElement('span'); note.className = 'pdf-note'; note.textContent = 'Cópia sob demanda; não altera o andamento da solicitação.';
-    $('#detail-actions').append(note);
-  }
   if (quote.status === 'Falha' && !quote.pdfGerado) {
     const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'secondary-button'; retry.textContent = 'Reenviar solicitação';
     retry.addEventListener('click', async () => {

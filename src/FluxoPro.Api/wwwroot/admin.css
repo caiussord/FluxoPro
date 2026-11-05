@@ -81,7 +81,6 @@
 .admin-page .pager button:disabled { opacity: .4; cursor: default; }
 .admin-page #quote-detail { margin-top: 58px; }
 .admin-page #detail-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.admin-page .pdf-note { color: var(--subtle); font-size: 13px; }
 .admin-page .detail-grid { gap: 0; border-top: 1px solid var(--rule); }
 .admin-page .detail-grid div { gap: 6px; border-bottom: 1px solid var(--rule); padding: 15px 20px 15px 0; }
 .admin-page .detail-grid span { color: var(--subtle); font-size: 11px; }
